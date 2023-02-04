@@ -2,29 +2,42 @@
 
 namespace Mubiridziri\Crud\Manager;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Mubiridziri\Crud\Context\ContextInterface;
-use Mubiridziri\Crud\Filtrator\FiltratorInterface;
-use Mubiridziri\Crud\Paginator\PaginatorInterface;
-use Mubiridziri\Crud\Sorter\SorterInterface;
+use Mubiridziri\Crud\QueryModifier\QueryModifierInterface;
 
 class ApiManager
 {
-    private PaginatorInterface $paginator;
+    private EntityManagerInterface $em;
 
-    private FiltratorInterface $filtrator;
+    /**
+     * @var array<QueryModifierInterface>
+     */
+    private array $modifiers;
 
-    private SorterInterface $sorter;
-
-    public function __construct(PaginatorInterface $paginator, FiltratorInterface $filtrator, SorterInterface $sorter)
+    public function __construct(EntityManagerInterface $em, ...$modifiers)
     {
-        $this->paginator = $paginator;
-        $this->filtrator = $filtrator;
-        $this->sorter = $sorter;
+        $this->em = $em;
+        $this->modifiers = $modifiers;
     }
 
-    public function getEntries(string $entityName, ContextInterface $context)
+    public function getEntries(string $entityName, ContextInterface $context): array
     {
+        $queryBuilder = $context->getQueryBuilder();
+        if (!$queryBuilder) {
+            $queryBuilder = $this->em->getRepository($entityName)->createQueryBuilder($context->getAlias());
+        }
 
+        foreach ($this->modifiers as $modifier) {
+            if ($modifier::supports($context)) {
+                $modifier->modify($queryBuilder, $context);
+            }
+        }
+        //TODO сейчас не будет работать, нужно придумать как считать всего (умеет пагинатор)
+        return [
+            'total' => count($queryBuilder),
+            'entries' => $queryBuilder->getQuery()->getResult()
+        ];
     }
 
 }

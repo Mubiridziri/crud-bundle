@@ -2,6 +2,7 @@
 
 namespace Mubiridziri\Crud\Context;
 
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
 class Context implements ContextInterface
@@ -17,13 +18,19 @@ class Context implements ContextInterface
 
     private string $sort;
 
-    public function __construct(int $page, int $limit, array $where, string $column, string $sort)
+    private string $alias;
+
+    private ?QueryBuilder $queryBuilder;
+
+    public function __construct(int $page, int $limit, array $where, string $column, string $sort, ?QueryBuilder $queryBuilder, string $alias = 'a')
     {
         $this->page = $page;
         $this->limit = $limit;
         $this->where = $where;
         $this->column = $column;
         $this->sort = $sort;
+        $this->queryBuilder = $queryBuilder;
+        $this->alias = $alias;
     }
 
     public function getPage(): int
@@ -49,6 +56,21 @@ class Context implements ContextInterface
     public function getSort(): string
     {
         return $this->sort;
+    }
+
+    public function getQueryBuilder(): ?QueryBuilder
+    {
+        return $this->queryBuilder;
+    }
+
+    public function setCustomAlias(string $alias)
+    {
+        $this->alias = $alias;
+    }
+
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 
     public static function Factory(Request $request): Context

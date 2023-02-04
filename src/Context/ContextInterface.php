@@ -2,6 +2,8 @@
 
 namespace Mubiridziri\Crud\Context;
 
+use Doctrine\ORM\QueryBuilder;
+
 interface ContextInterface
 {
     public function getPage(): int;
@@ -13,4 +15,10 @@ interface ContextInterface
     public function getColumn(): string;
 
     public function getSort(): string;
+
+    public function getQueryBuilder(): ?QueryBuilder;
+
+    public function setCustomAlias(string $alias);
+
+    public function getAlias(): string;
 }
