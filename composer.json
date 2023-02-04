@@ -1,0 +1,29 @@
+{
+    "name": "mubiridziri/crud",
+    "description": "Simple implementration of CRUD API",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mubiridziri\\Crud\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yury Potapov",
+            "email": "yury.potapov@satellite-soft.ru"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.4 | ^8.0",
+        "symfony/dependency-injection": "5.4.x-dev",
+        "symfony/config": "5.4.x-dev",
+        "symfony/http-kernel": "5.4.x-dev",
+        "symfony/routing": "5.4.x-dev",
+        "symfony/orm-pack": "dev-main",
+        "symfony/framework-bundle": "5.4.x-dev",
+        "symfony/serializer": "5.4.x-dev",
+        "symfony/validator": "5.4.x-dev"
+    }
+}
