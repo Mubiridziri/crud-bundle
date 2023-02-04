@@ -3,6 +3,7 @@
 namespace Mubiridziri\Crud\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Mubiridziri\Crud\Context\Context;
 use Mubiridziri\Crud\Exception\NotOverriddenMethodException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,20 +18,27 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class CrudController extends AbstractController implements CrudControllerInterface
 {
     /**
-     * @throws NotOverriddenMethodException
      * @return null|object
+     * @throws NotOverriddenMethodException
      */
     public static function getEntityName()
     {
         throw new NotOverriddenMethodException(sprintf("Required method %s not overridden", 'getEntityName'));
     }
 
+
+    public function getDefaultContext(): array
+    {
+        return [];
+    }
+
     /**
      * @return void
      * @Route("", methods={"GET"})
      */
-    public function listAction(): JsonResponse
+    public function listAction(Request $request): JsonResponse
     {
+        $context = Context::Factory($request);
 
     }
 
@@ -42,7 +50,7 @@ class CrudController extends AbstractController implements CrudControllerInterfa
     {
         return $this->json($this->getEntityById($entityId), Response::HTTP_OK, [], [
             AbstractNormalizer::GROUPS => ['Detail']
-        ]);
+        ] + $this->getDefaultContext());
     }
 
     /**
@@ -69,7 +77,7 @@ class CrudController extends AbstractController implements CrudControllerInterfa
             $em->flush();
             return $this->json($entity, Response::HTTP_OK, [], [
                 AbstractNormalizer::GROUPS => ['View']
-            ]);
+            ] + $this->getDefaultContext());
         } catch (NotFoundHttpException $exception) {
             return $this->json(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
@@ -103,7 +111,7 @@ class CrudController extends AbstractController implements CrudControllerInterfa
             $em->flush();
             return $this->json($entity, Response::HTTP_OK, [], [
                 AbstractNormalizer::GROUPS => ['View']
-            ]);
+            ] + $this->getDefaultContext());
         } catch (NotFoundHttpException $exception) {
             return $this->json(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
@@ -124,7 +132,7 @@ class CrudController extends AbstractController implements CrudControllerInterfa
             $em->flush();
             return $this->json($entity, Response::HTTP_OK, [], [
                 AbstractNormalizer::GROUPS => ['View']
-            ]);
+            ] + $this->getDefaultContext());
         } catch (NotFoundHttpException $exception) {
             return $this->json(['error' => $exception->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (\Exception $exception) {
@@ -148,6 +156,4 @@ class CrudController extends AbstractController implements CrudControllerInterfa
     {
         return $this->container->get('doctrine')->getManager();
     }
-
-
 }

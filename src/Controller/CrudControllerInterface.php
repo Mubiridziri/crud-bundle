@@ -9,4 +9,6 @@ interface CrudControllerInterface
      * @return mixed
      */
     public static function getEntityName();
+
+    public function getDefaultContext(): array;
 }
